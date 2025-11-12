@@ -1,14 +1,15 @@
-/* Topbar Styles */
+/* Topbar Styles - Purple Pink Peach Sunset Theme */
 .topbar {
   height: 80px;
-  background: white;
-  border-bottom: 1px solid #e6eefb;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--color-accent-light);
   position: fixed;
   top: 0;
   left: 260px;
   right: 0;
   z-index: 90;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgba(84, 8, 99, 0.06);
 }
 
 .topbar-content {
@@ -26,7 +27,10 @@
 .page-title {
   font-size: 1.625rem;
   font-weight: 700;
-  color: #0f1724;
+  background: var(--gradient-sunset);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
   letter-spacing: -0.01em;
 }
@@ -43,8 +47,8 @@
   height: 44px;
   border-radius: 12px;
   border: none;
-  background: #f7fbff;
-  color: #7b8a99;
+  background: rgba(255, 211, 213, 0.3);
+  color: var(--color-text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -53,8 +57,8 @@
 }
 
 .icon-btn:hover {
-  background: #eef6ff;
-  color: #0f62fe;
+  background: rgba(228, 155, 166, 0.25);
+  color: var(--color-primary);
   transform: scale(1.05);
 }
 
@@ -84,15 +88,15 @@
   gap: 0.875rem;
   padding: 0.625rem 1rem;
   border-radius: 12px;
-  border: 2px solid #e6eefb;
+  border: 2px solid var(--color-accent-light);
   background: white;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .user-btn:hover {
-  background: #f7fbff;
-  border-color: #0f62fe;
+  background: rgba(255, 245, 247, 0.8);
+  border-color: var(--color-accent-peach);
   transform: translateY(-1px);
 }
 
@@ -100,18 +104,18 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0f62fe 0%, #4589ff 100%);
+  background: var(--gradient-sunset);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(15, 98, 254, 0.3);
+  box-shadow: 0 2px 8px rgba(146, 72, 122, 0.35);
 }
 
 .user-name {
   font-size: 1rem;
   font-weight: 600;
-  color: #0f1724;
+  color: var(--color-primary);
 }
 
 .dropdown-menu {
@@ -119,9 +123,9 @@
   top: calc(100% + 0.75rem);
   right: 0;
   background: white;
-  border: 1px solid #e6eefb;
+  border: 2px solid var(--color-accent-light);
   border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(2, 6, 23, 0.15);
+  box-shadow: 0 12px 40px rgba(84, 8, 99, 0.15);
   min-width: 200px;
   padding: 0.75rem;
   animation: dropdownSlide 0.2s ease;
@@ -146,7 +150,7 @@
   padding: 0.875rem 1.125rem;
   border: none;
   background: transparent;
-  color: #0f1724;
+  color: var(--color-text-primary);
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -156,16 +160,16 @@
 }
 
 .dropdown-item:hover {
-  background: #f7fbff;
-  color: #0f62fe;
+  background: rgba(255, 211, 213, 0.25);
+  color: var(--color-primary);
 }
 
 .dropdown-item svg {
-  color: #7b8a99;
+  color: var(--color-text-secondary);
 }
 
 .dropdown-item:hover svg {
-  color: #0f62fe;
+  color: var(--color-primary);
 }
 
 /* Profile Modal */
@@ -219,13 +223,16 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid #e6eefb;
+  border-bottom: 2px solid var(--color-accent-light);
 }
 
 .modal-header h3 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #0f1724;
+  background: var(--gradient-sunset);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
 }
 
@@ -243,13 +250,13 @@
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0f62fe 0%, #4589ff 100%);
+  background: var(--gradient-sunset);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  box-shadow: 0 8px 24px rgba(15, 98, 254, 0.3);
+  box-shadow: 0 8px 24px rgba(146, 72, 122, 0.35);
 }
 
 .profile-avatar-large svg {
@@ -268,15 +275,16 @@
   align-items: center;
   gap: 1.25rem;
   padding: 1.25rem;
-  background: #f7fbff;
+  background: rgba(255, 245, 247, 0.6);
   border-radius: 16px;
-  border: 2px solid #e6eefb;
+  border: 2px solid var(--color-accent-light);
   transition: all 0.2s ease;
 }
 
 .profile-info-item:hover {
-  border-color: #0f62fe;
+  border-color: var(--color-accent-peach);
   transform: translateX(4px);
+  background: rgba(255, 235, 240, 0.5);
 }
 
 .profile-icon {
@@ -287,9 +295,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0f62fe;
+  color: var(--color-primary);
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(15, 98, 254, 0.1);
+  box-shadow: 0 2px 8px rgba(146, 72, 122, 0.15);
 }
 
 .profile-details {
@@ -301,7 +309,7 @@
 
 .profile-label {
   font-size: 0.875rem;
-  color: #7b8a99;
+  color: var(--color-text-secondary);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -309,7 +317,7 @@
 
 .profile-value {
   font-size: 1.125rem;
-  color: #0f1724;
+  color: var(--color-primary);
   font-weight: 600;
   word-break: break-word;
 }
@@ -319,7 +327,7 @@
   justify-content: center;
   gap: 1rem;
   padding-top: 1rem;
-  border-top: 2px solid #e6eefb;
+  border-top: 2px solid var(--color-accent-light);
 }
 
 .btn {
@@ -335,14 +343,14 @@
 
 .btn-outline {
   background: transparent;
-  border: 2px solid #e6eefb;
-  color: #0f1724;
+  border: 2px solid var(--color-accent-light);
+  color: var(--color-primary);
 }
 
 .btn-outline:hover {
-  background: #f7fbff;
-  border-color: #0f62fe;
-  color: #0f62fe;
+  background: rgba(255, 235, 240, 0.5);
+  border-color: var(--color-accent-peach);
+  color: var(--color-primary);
 }
 
 /* Responsive */

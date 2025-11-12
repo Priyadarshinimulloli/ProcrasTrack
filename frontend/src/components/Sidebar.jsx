@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import './Sidebar.css'
+import logo from '../assets/image.png'
 
 function IconTasks() {
   return (
@@ -41,11 +42,8 @@ export default function Sidebar() {
     <aside className="sidebar">
       <div className="sidebar-header">
         <div className="logo">
-          <svg viewBox="0 0 24 24" width="32" height="32">
-            <rect x="3" y="3" width="18" height="18" rx="4" fill="#0f62fe" />
-            <path d="M7 13l3 3 7-9" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          </svg>
-          <span className="logo-text">FocusTrack</span>
+          <img src={logo} alt="ProcrastiNot Logo" width="40" height="40" style={{ borderRadius: '8px' }} />
+          <span className="logo-text">ProcrasTrack</span>
         </div>
       </div>
 
