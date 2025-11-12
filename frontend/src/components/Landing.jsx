@@ -113,11 +113,18 @@ const handleSubmit = async (e) => {
       });
       data = await res.json();
 
-      alert(data.message);
-
       if (res.ok) {
+        // Store user profile in localStorage
+        localStorage.setItem('userId', data.userId);
+        localStorage.setItem('username', data.username);
+        localStorage.setItem('userEmail', data.email);
+        if (data.occupation) localStorage.setItem('occupation', data.occupation);
+        
+        alert(data.message);
         navigate('/userdashboard'); 
         onClose(); 
+      } else {
+        alert(data.message || 'Login failed');
       }
 
     } else {
@@ -128,11 +135,18 @@ const handleSubmit = async (e) => {
       });
       data = await res.json();
 
-      alert(data.message);
-
       if (res.ok) {
+        // Store user profile in localStorage
+        localStorage.setItem('userId', data.userId);
+        localStorage.setItem('username', data.username);
+        localStorage.setItem('userEmail', data.email);
+        if (occupation) localStorage.setItem('occupation', occupation);
+        
+        alert(data.message);
         navigate('/userdashboard'); 
         onClose(); 
+      } else {
+        alert(data.message || 'Signup failed');
       }
     }
 
