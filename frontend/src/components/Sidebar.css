@@ -1,21 +1,21 @@
-/* Sidebar Styles */
+/* Sidebar Styles - Purple Pink Peach Sunset Theme */
 .sidebar {
   width: 280px;
   height: 100vh;
-  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
-  border-right: 2px solid #e6eefb;
+  background: linear-gradient(180deg, #ffffff 0%, #fff5f7 50%, #ffe9f0 100%);
+  border-right: 2px solid var(--color-accent-light);
   display: flex;
   flex-direction: column;
   position: fixed;
   left: 0;
   top: 0;
   z-index: 100;
-  box-shadow: 2px 0 12px rgba(2, 6, 23, 0.06);
+  box-shadow: 2px 0 12px rgba(84, 8, 99, 0.08);
 }
 
 .sidebar-header {
   padding: 2rem 1.75rem;
-  border-bottom: 2px solid #e6eefb;
+  border-bottom: 2px solid var(--color-accent-light);
 }
 
 .logo {
@@ -27,13 +27,17 @@
 .logo svg {
   width: 36px;
   height: 36px;
-  color: #0f62fe;
+  color: var(--color-primary);
+  filter: drop-shadow(0 2px 4px rgba(146, 72, 122, 0.2));
 }
 
 .logo-text {
   font-size: 1.375rem;
   font-weight: 700;
-  color: #0f1724;
+  background: var(--gradient-sunset);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: -0.5px;
 }
 
@@ -68,7 +72,7 @@
   transform: translateY(-50%);
   width: 4px;
   height: 0;
-  background: #0f62fe;
+  background: var(--gradient-sunset);
   border-radius: 0 4px 4px 0;
   transition: height 0.3s ease;
 }
@@ -78,15 +82,15 @@
 }
 
 .nav-item:hover {
-  background: #eef6ff;
-  color: #0f62fe;
+  background: rgba(255, 211, 213, 0.3);
+  color: var(--color-primary);
   transform: translateX(4px);
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, #0f62fe 0%, #4589ff 100%);
+  background: var(--gradient-sunset);
   color: white;
-  box-shadow: 0 4px 16px rgba(15, 98, 254, 0.25);
+  box-shadow: 0 4px 16px rgba(146, 72, 122, 0.35);
 }
 
 .nav-item.active::before {
@@ -101,12 +105,12 @@
 
 .sidebar-footer {
   padding: 1.75rem;
-  border-top: 2px solid #e6eefb;
+  border-top: 2px solid var(--color-accent-light);
 }
 
 .sidebar-footer-text {
   font-size: 0.875rem;
-  color: #7b8a99;
+  color: var(--color-text-secondary);
   margin: 0;
   text-align: center;
   font-style: italic;

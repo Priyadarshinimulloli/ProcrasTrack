@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import logo from '../assets/image.png'
 
 import './Landing.css'
 
@@ -37,12 +38,9 @@ function Nav() {
       <div className="nav-container">
         <div className="brand">
           <div className="logo-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="36" height="36">
-              <rect x="3" y="3" width="18" height="18" rx="4" fill="#0f62fe" />
-              <path d="M7 13l3 3 7-9" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            </svg>
+            <img src={logo} alt="ProcrastiNot Logo" width="60" height="60" style={{ borderRadius: '8px' }} />
           </div>
-          <span className="brand-title">FocusTrack</span>
+          <span className="brand-title">ProcrasTrack</span>
         </div>
       </div>
     </header>
@@ -57,7 +55,7 @@ function Hero({ onOpenUser, onOpenAdmin }) {
         <div className="hero-content">
           <h1 className="hero-title">Track distractions. Build focus. Get things done.</h1>
           <p className="hero-subtitle">
-            FocusTrack helps you understand your procrastination patterns, set achievable goals, 
+            ProcrastiNot helps you understand your procrastination patterns, set achievable goals, 
             and celebrate progress—one focused session at a time.
           </p>
           <ul className="hero-features">
