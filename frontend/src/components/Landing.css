@@ -131,60 +131,69 @@
 }
 
 .cta-title {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
-  margin: 0 0 2rem;
+  margin: 0 0 2.5rem;
   color: var(--text-primary);
 }
 
 .cta-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 2rem;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
 }
 
 .role-card {
   background: var(--card-bg);
   border: 2px solid var(--border-light);
-  border-radius: 16px;
-  padding: 2rem 1.5rem;
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .role-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(2, 6, 23, 0.15);
   border-color: var(--accent-blue);
 }
 
 .role-card h3 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   color: var(--text-primary);
+  font-weight: 700;
 }
 
 .role-card p {
   margin: 0;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   color: var(--text-secondary);
+  line-height: 1.5;
 }
 
 .role-icon {
-  width: 80px;
-  height: 80px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.role-icon svg {
+  width: 48px;
+  height: 48px;
 }
 
 .user-icon {
@@ -225,13 +234,13 @@
 /* Modal Content */
 .modal-content {
   background: var(--card-bg);
-  border-radius: 20px;
-  padding: 2.5rem;
-  max-width: 480px;
+  border-radius: 24px;
+  padding: 3rem;
+  max-width: 520px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
   position: relative;
   animation: slideUp 0.3s ease;
 }
@@ -249,46 +258,54 @@
 
 .modal-close {
   position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
+  top: 1.5rem;
+  right: 1.5rem;
   background: transparent;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.625rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 10px;
   transition: all 0.2s ease;
 }
 
 .modal-close:hover {
   background: rgba(0, 0, 0, 0.05);
   color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.modal-close svg {
+  width: 24px;
+  height: 24px;
 }
 
 .modal-header {
-  margin-bottom: 1.5rem;
-  padding-right: 2rem;
+  margin-bottom: 2rem;
+  padding-right: 2.5rem;
 }
 
 .modal-header h2 {
-  font-size: 1.75rem;
-  margin: 0 0 0.5rem;
+  font-size: 2rem;
+  margin: 0 0 0.75rem;
   color: var(--text-primary);
+  font-weight: 700;
 }
 
 .modal-header p {
   color: var(--text-secondary);
   margin: 0;
-  font-size: 0.9375rem;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .modal-tabs {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
   border-bottom: 2px solid var(--border-light);
 }
 
@@ -296,18 +313,19 @@
   flex: 1;
   background: transparent;
   border: none;
-  padding: 0.75rem 1rem;
-  font-size: 0.9375rem;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
   margin-bottom: -2px;
   transition: all 0.2s ease;
 }
 
 .modal-tab:hover {
   color: var(--text-primary);
+  background: rgba(15, 98, 254, 0.05);
 }
 
 .modal-tab.active {
@@ -318,7 +336,7 @@
 .modal-form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 /* Auth Section - Remove since we're using modals */
@@ -327,23 +345,23 @@
 }
 
 .form-group {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
   display: block;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.625rem;
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1.25rem;
   font-size: 1rem;
-  border: 1px solid var(--border-light);
-  border-radius: 10px;
+  border: 2px solid var(--border-light);
+  border-radius: 12px;
   background: #fbfdff;
   color: var(--text-primary);
   transition: all 0.2s ease;
@@ -352,7 +370,8 @@
 .form-group input:focus {
   outline: none;
   border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(15, 98, 254, 0.1);
+  box-shadow: 0 0 0 4px rgba(15, 98, 254, 0.15);
+  background: white;
 }
 
 .form-group input::placeholder {
@@ -361,44 +380,45 @@
 }
 
 .form-actions {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
   align-items: center;
 }
 
 /* Buttons */
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1.75rem;
   font-size: 1rem;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: 12px;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   font-family: inherit;
 }
 
 .btn-primary {
-  background: var(--accent-blue);
+  background: linear-gradient(135deg, var(--accent-blue) 0%, #4589ff 100%);
   color: white;
+  box-shadow: 0 4px 16px rgba(15, 98, 254, 0.3);
 }
 
 .btn-primary:hover {
-  background: #0353e9;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(15, 98, 254, 0.4);
 }
 
 .btn-outline {
   background: transparent;
-  border: 1px solid var(--accent-blue);
+  border: 2px solid var(--accent-blue);
   color: var(--accent-blue);
 }
 
 .btn-outline:hover {
-  background: rgba(15, 98, 254, 0.05);
+  background: rgba(15, 98, 254, 0.08);
+  transform: translateY(-1px);
 }
 
 .btn-block {
@@ -409,9 +429,10 @@
   background: transparent;
   border: none;
   color: var(--accent-blue);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.625rem;
+  font-weight: 500;
 }
 
 .btn-link:hover {

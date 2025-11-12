@@ -1,0 +1,52 @@
+/* Insights Page */
+.insights-page {
+  width: 100%;
+}
+
+.insights-placeholder {
+  background: transparent;
+  border-radius: 20px;
+  padding: 4rem 2rem;
+  text-align: center;
+  border: none;
+}
+
+.placeholder-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.insights-placeholder h3 {
+  font-size: 1.75rem;
+  color: #0f1724;
+  margin: 0 0 1rem;
+}
+
+.insights-placeholder p {
+  color: #7b8a99;
+  font-size: 1.125rem;
+  margin: 0 0 1.5rem;
+}
+
+.insights-placeholder ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  text-align: left;
+}
+
+.insights-placeholder li {
+  color: #0f1724;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.insights-placeholder li::before {
+  content: '✓';
+  color: #16a34a;
+  font-weight: 700;
+}

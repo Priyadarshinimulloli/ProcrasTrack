@@ -1,0 +1,39 @@
+/* Dashboard Layout */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background: transparent;
+}
+
+.dashboard-main {
+  flex: 1;
+  margin-left: 280px;
+  padding-top: 80px;
+  background: transparent;
+}
+
+.dashboard-content {
+  padding: 2.5rem 3rem;
+  min-height: calc(100vh - 80px);
+  width: 100%;
+  background: transparent;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .dashboard-content {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-main {
+    margin-left: 70px;
+    padding-top: 70px;
+  }
+
+  .dashboard-content {
+    padding: 1.5rem 1rem;
+    min-height: calc(100vh - 70px);
+  }
+}
