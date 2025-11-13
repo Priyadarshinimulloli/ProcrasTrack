@@ -205,6 +205,255 @@ app.put('/api/tasks/:id', (req, res) => {
   });
 });
 
+// Get all reasons for procrastination
+app.get('/api/reasons', (req, res) => {
+  const sql = 'SELECT * FROM reason ORDER BY reason_id';
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching reasons:', err);
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+// Get all emotional states
+app.get('/api/emotional-states', (req, res) => {
+  const sql = 'SELECT * FROM emotional_state ORDER BY emotional_id';
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching emotional states:', err);
+      return res.status(500).json({ error: err.message });
+    }
+    console.log('Emotional states from DB:', results);
+    res.json(results);
+  });
+});
+
+// Get all procrastination logs with task details
+app.get('/api/procrastination-logs', (req, res) => {
+  const { user_id } = req.query;
+
+  if (!user_id) {
+    return res.status(400).json({ message: 'user_id is required' });
+  }
+
+  const sql = `
+    SELECT 
+      pl.log_id,
+      pl.task_id,
+      t.task_name,
+      t.category,
+      t.planned_end,
+      t.actual_end,
+      pd.delay_duration,
+      r.reason_text,
+      es.emotion_text,
+      pd.logged_date,
+      pd.detail_id
+    FROM procrastination_log pl
+    INNER JOIN tasks t ON pl.task_id = t.task_id
+    INNER JOIN procrastination_details pd ON pl.log_id = pd.log_id
+    INNER JOIN reason r ON pd.reason_id = r.reason_id
+    INNER JOIN emotional_state es ON pd.emotional_id = es.emotional_id
+    WHERE pl.user_id = ?
+    ORDER BY pd.logged_date DESC, t.actual_end DESC
+  `;
+
+  db.query(sql, [user_id], (err, results) => {
+    if (err) {
+      console.error('Error fetching procrastination logs:', err);
+      return res.status(500).json({ error: err.message });
+    }
+    console.log('Procrastination logs fetched:', results.length);
+    res.json(results);
+  });
+});
+
+// Get analytics data for a user
+app.get('/api/analytics', (req, res) => {
+  const { user_id } = req.query;
+
+  if (!user_id) {
+    return res.status(400).json({ message: 'user_id is required' });
+  }
+
+  // Get total tasks and delayed tasks
+  const totalTasksSql = `
+    SELECT 
+      COUNT(*) as total_tasks,
+      SUM(CASE WHEN user_status = 'completed' THEN 1 ELSE 0 END) as completed_tasks
+    FROM tasks t
+    INNER JOIN usertasks ut ON t.task_id = ut.task_id
+    WHERE ut.user_id = ?
+  `;
+
+  // Get delayed tasks count
+  const delayedTasksSql = `
+    SELECT COUNT(DISTINCT pl.task_id) as delayed_tasks
+    FROM procrastination_log pl
+    WHERE pl.user_id = ?
+  `;
+
+  // Get reasons breakdown
+  const reasonsSql = `
+    SELECT r.reason_text, COUNT(*) as count
+    FROM procrastination_log pl
+    INNER JOIN procrastination_details pd ON pl.log_id = pd.log_id
+    INNER JOIN reason r ON pd.reason_id = r.reason_id
+    WHERE pl.user_id = ?
+    GROUP BY r.reason_text
+    ORDER BY count DESC
+  `;
+
+  // Get emotional states breakdown
+  const emotionsSql = `
+    SELECT es.emotion_text, COUNT(*) as count
+    FROM procrastination_log pl
+    INNER JOIN procrastination_details pd ON pl.log_id = pd.log_id
+    INNER JOIN emotional_state es ON pd.emotional_id = es.emotional_id
+    WHERE pl.user_id = ?
+    GROUP BY es.emotion_text
+    ORDER BY count DESC
+  `;
+
+  // Get average delay duration
+  const avgDelaySql = `
+    SELECT AVG(pd.delay_duration) as avg_delay
+    FROM procrastination_log pl
+    INNER JOIN procrastination_details pd ON pl.log_id = pd.log_id
+    WHERE pl.user_id = ?
+  `;
+
+  // Get category-wise delays
+  const categorySql = `
+    SELECT t.category, COUNT(*) as delay_count, AVG(pd.delay_duration) as avg_delay
+    FROM procrastination_log pl
+    INNER JOIN tasks t ON pl.task_id = t.task_id
+    INNER JOIN procrastination_details pd ON pl.log_id = pd.log_id
+    WHERE pl.user_id = ?
+    GROUP BY t.category
+    ORDER BY delay_count DESC
+  `;
+
+  // Get delay trends over time (last 30 days)
+  const trendsSql = `
+    SELECT 
+      DATE(pd.logged_date) as date,
+      COUNT(*) as delay_count,
+      AVG(pd.delay_duration) as avg_delay
+    FROM procrastination_log pl
+    INNER JOIN procrastination_details pd ON pl.log_id = pd.log_id
+    WHERE pl.user_id = ? AND pd.logged_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    GROUP BY DATE(pd.logged_date)
+    ORDER BY date ASC
+  `;
+
+  // Execute all queries
+  const analytics = {};
+
+  db.query(totalTasksSql, [user_id], (err1, totalResults) => {
+    if (err1) {
+      console.error('Error fetching total tasks:', err1);
+      return res.status(500).json({ error: err1.message });
+    }
+    analytics.totalTasks = totalResults[0];
+
+    db.query(delayedTasksSql, [user_id], (err2, delayedResults) => {
+      if (err2) {
+        console.error('Error fetching delayed tasks:', err2);
+        return res.status(500).json({ error: err2.message });
+      }
+      analytics.delayedTasks = delayedResults[0].delayed_tasks;
+
+      db.query(reasonsSql, [user_id], (err3, reasonsResults) => {
+        if (err3) {
+          console.error('Error fetching reasons:', err3);
+          return res.status(500).json({ error: err3.message });
+        }
+        analytics.reasonsBreakdown = reasonsResults;
+
+        db.query(emotionsSql, [user_id], (err4, emotionsResults) => {
+          if (err4) {
+            console.error('Error fetching emotions:', err4);
+            return res.status(500).json({ error: err4.message });
+          }
+          analytics.emotionsBreakdown = emotionsResults;
+
+          db.query(avgDelaySql, [user_id], (err5, avgDelayResults) => {
+            if (err5) {
+              console.error('Error fetching avg delay:', err5);
+              return res.status(500).json({ error: err5.message });
+            }
+            analytics.avgDelay = avgDelayResults[0].avg_delay || 0;
+
+            db.query(categorySql, [user_id], (err6, categoryResults) => {
+              if (err6) {
+                console.error('Error fetching category delays:', err6);
+                return res.status(500).json({ error: err6.message });
+              }
+              analytics.categoryDelays = categoryResults;
+
+              db.query(trendsSql, [user_id], (err7, trendsResults) => {
+                if (err7) {
+                  console.error('Error fetching trends:', err7);
+                  return res.status(500).json({ error: err7.message });
+                }
+                analytics.delayTrends = trendsResults;
+
+                console.log('Analytics data fetched for user:', user_id);
+                res.json(analytics);
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+});
+
+// Create a new procrastination log
+app.post('/api/procrastination-logs', (req, res) => {
+  const { task_id, user_id, reason_id, emotional_id, duration_minutes, date } = req.body;
+
+  if (!task_id || !user_id || !reason_id || !emotional_id || !duration_minutes) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  // First, insert into procrastination_log table
+  const logSql = `INSERT INTO procrastination_log (user_id, task_id) VALUES (?, ?)`;
+
+  db.query(logSql, [user_id, task_id], (logErr, logResult) => {
+    if (logErr) {
+      console.error('Error creating procrastination log:', logErr);
+      return res.status(500).json({ error: logErr.message });
+    }
+
+    const logId = logResult.insertId;
+
+    // Then, insert into procrastination_detail table
+    const detailSql = `INSERT INTO procrastination_details (log_id, delay_duration, reason_id, emotional_id, logged_date) 
+                       VALUES (?, ?, ?, ?, ?)`;
+
+    db.query(detailSql, [logId, duration_minutes, reason_id, emotional_id, date], (detailErr, detailResult) => {
+      if (detailErr) {
+        console.error('Error creating procrastination detail:', detailErr);
+        // Rollback: Delete the log entry if detail insertion fails
+        db.query('DELETE FROM procrastination_log WHERE log_id = ?', [logId], () => {
+          return res.status(500).json({ error: detailErr.message });
+        });
+        return;
+      }
+
+      res.status(201).json({ 
+        message: 'Procrastination log created successfully',
+        log_id: logId,
+        detail_id: detailResult.insertId
+      });
+    });
+  });
+});
+
 
 
 const PORT = process.env.PORT || 5000;
