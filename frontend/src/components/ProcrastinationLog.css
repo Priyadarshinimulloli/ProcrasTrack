@@ -3,253 +3,281 @@
   width: 100%;
 }
 
-.header-actions {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
+/* Filters Section */
+.filters-section {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 2px solid var(--color-accent-light);
+  box-shadow: 0 2px 12px rgba(84, 8, 99, 0.08);
 }
 
-.date-filter {
-  padding: 0.875rem 1.25rem;
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.filter-group label svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-accent-pink);
+}
+
+.filter-group select {
+  padding: 0.875rem 1rem;
   font-size: 1rem;
-  border: 2px solid #e6eefb;
+  border: 2px solid var(--color-accent-light);
   border-radius: 12px;
   background: white;
-  color: #0f1724;
+  color: var(--text-primary);
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.date-filter:hover {
-  border-color: #0f62fe;
-  box-shadow: 0 2px 8px rgba(15, 98, 254, 0.1);
+.filter-group select:hover {
+  border-color: var(--color-accent-pink);
 }
 
-.date-filter:focus {
+.filter-group select:focus {
   outline: none;
-  border-color: #0f62fe;
-  box-shadow: 0 0 0 4px rgba(15, 98, 254, 0.15);
+  border-color: var(--color-accent-pink);
+  box-shadow: 0 0 0 4px rgba(146, 72, 122, 0.15);
 }
 
-/* Timeline */
-.logs-timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-}
-
-.date-section {
+.filter-group select option {
   background: white;
-  border-radius: 20px;
-  padding: 2rem;
-  border: 2px solid #e6eefb;
-  box-shadow: 0 2px 12px rgba(2, 6, 23, 0.06);
+  color: var(--text-primary);
+  padding: 0.5rem;
 }
 
-.date-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 2px solid #e6eefb;
-  margin-bottom: 1.5rem;
-}
-
-.date-header svg {
-  color: #0f62fe;
-  width: 24px;
-  height: 24px;
-}
-
-.date-header h3 {
-  font-size: 1.375rem;
-  margin: 0;
-  color: #0f1724;
-  flex: 1;
-  font-weight: 600;
-}
-
-.log-count {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #0f62fe;
-  background: #f7fbff;
-  padding: 0.5rem 1rem;
-  border-radius: 24px;
-  border: 1px solid #e6eefb;
-}
-
-.logs-list {
-  display: flex;
-  flex-direction: column;
+/* Logs Grid */
+.logs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 1.5rem;
 }
 
 /* Log Card */
 .log-card {
-  background: #f7fbff;
-  border-radius: 16px;
-  padding: 1.75rem;
-  cursor: pointer;
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  border: 2px solid var(--color-accent-light);
+  box-shadow: 0 2px 12px rgba(84, 8, 99, 0.08);
   transition: all 0.3s ease;
-  border: 2px solid transparent;
   position: relative;
   overflow: hidden;
 }
 
+/* Delay Severity Color Coding */
 .log-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #0f62fe 0%, #4589ff 100%);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
+  height: 6px;
+  transition: all 0.3s ease;
 }
 
-.log-card:hover::before {
-  transform: scaleX(1);
+.log-card.delay-low::before {
+  background: linear-gradient(90deg, #4CAF50 0%, #81C784 100%);
+}
+
+.log-card.delay-medium::before {
+  background: linear-gradient(90deg, #FF9800 0%, #FFB74D 100%);
+}
+
+.log-card.delay-high::before {
+  background: linear-gradient(90deg, #F44336 0%, #E57373 100%);
 }
 
 .log-card:hover {
-  background: white;
-  border-color: #0f62fe;
-  transform: translateX(8px);
-  box-shadow: 0 4px 16px rgba(15, 98, 254, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(84, 8, 99, 0.15);
+  border-color: var(--color-accent-pink);
 }
 
-.log-header {
+/* Card Header */
+.log-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: start;
-  margin-bottom: 1rem;
-  gap: 1.5rem;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--color-accent-light);
 }
 
-.log-task {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
+.log-task-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0;
   flex: 1;
+  line-height: 1.3;
 }
 
-.log-task strong {
-  color: #0f1724;
-  font-size: 1.0625rem;
-  font-weight: 600;
-}
-
-.emotion-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.875rem;
-  background: white;
+.category-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--gradient-soft);
   border-radius: 24px;
   font-size: 0.875rem;
-  color: #7b8a99;
-  width: fit-content;
-  border: 1px solid #e6eefb;
-  font-weight: 500;
-}
-
-.log-duration {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #0f62fe;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  background: white;
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
-  border: 2px solid #e6eefb;
+  font-weight: 600;
+  color: var(--color-primary);
   white-space: nowrap;
 }
 
-.log-duration svg {
-  color: #0f62fe;
-  width: 18px;
-  height: 18px;
+/* Card Body */
+.log-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
 }
 
-.log-reason {
-  color: #0f1724;
-  font-size: 1rem;
-  margin: 0 0 0.75rem;
-  line-height: 1.6;
-  font-weight: 500;
-}
-
-.log-notes {
-  color: #7b8a99;
+.log-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
   font-size: 0.9375rem;
-  margin: 0;
-  font-style: italic;
-  padding-top: 0.75rem;
-  border-top: 1px solid #e6eefb;
-  line-height: 1.5;
 }
 
+.log-info-row.highlight {
+  background: var(--gradient-soft);
+  padding: 0.875rem 1rem;
+  border-radius: 12px;
+  margin: 0.5rem 0;
+}
+
+.log-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.log-label svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-accent-pink);
+}
+
+.log-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: right;
+}
+
+.delay-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  background: var(--gradient-sunset);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.log-divider {
+  height: 1px;
+  background: var(--color-accent-light);
+  margin: 0.5rem 0;
+}
+
+/* Empty State */
 .empty-state {
   text-align: center;
   padding: 5rem 2.5rem;
   background: white;
   border-radius: 20px;
-  border: 2px dashed #e6eefb;
-  color: #7b8a99;
-  font-size: 1rem;
+  border: 2px dashed var(--color-accent-light);
 }
 
-/* Form Styles - Reuse from Tasks.css */
-.log-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.6;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 1rem;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  font-size: 1.0625rem;
+  margin: 0;
+  line-height: 1.6;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
-  .date-section {
-    padding: 1.75rem;
-  }
-
-  .log-card {
-    padding: 1.5rem;
+@media (max-width: 1200px) {
+  .logs-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
-  .header-actions {
-    width: 100%;
-    flex-direction: column;
+  .filters-grid {
+    grid-template-columns: 1fr;
   }
 
-  .date-filter {
-    width: 100%;
-  }
-
-  .date-section {
-    padding: 1.5rem;
-  }
-
-  .log-header {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .log-duration {
-    align-self: flex-start;
+  .logs-grid {
+    grid-template-columns: 1fr;
   }
 
   .log-card {
-    padding: 1.25rem;
+    padding: 1.5rem;
+  }
+
+  .log-card-header {
+    flex-direction: column;
+  }
+
+  .category-badge {
+    align-self: flex-start;
+  }
+
+  .log-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .log-value {
+    text-align: left;
   }
 
   .empty-state {
     padding: 3rem 1.5rem;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
   }
 }

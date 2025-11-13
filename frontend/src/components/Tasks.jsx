@@ -52,21 +52,65 @@ function IconCheck() {
 export default function Tasks() {
   const [tasks, setTasks] = useState([])
   const [showModal, setShowModal] = useState(false)
+  const [showDelayModal, setShowDelayModal] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
+  const [completingTask, setCompletingTask] = useState(null)
+  const [reasons, setReasons] = useState([])
+  const [emotionalStates, setEmotionalStates] = useState([])
   const [formData, setFormData] = useState({
     title: '',
     category: '',
     planned_start_time: '',
     planned_end_time: ''
   })
+  const [delayData, setDelayData] = useState({
+    reason_id: '',
+    emotional_id: ''
+  })
 
   // user id (should be set after login). Fallback to 1 for development.
   const userId = localStorage.getItem('userId') || 1
 
-  // Fetch tasks from backend
+  // Fetch tasks, reasons, and emotional states from backend
   useEffect(() => {
     fetchTasks()
+    fetchReasons()
+    fetchEmotionalStates()
   }, [])
+
+  const fetchReasons = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/reasons')
+      if (response.ok) {
+        const data = await response.json()
+        console.log('Fetched reasons:', data)
+        console.log('Reasons array length:', data.length)
+        console.log('First reason:', data[0])
+        setReasons(data)
+      } else {
+        console.error('Failed to fetch reasons, status:', response.status)
+      }
+    } catch (error) {
+      console.error('Failed to fetch reasons:', error)
+    }
+  }
+
+  const fetchEmotionalStates = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/emotional-states')
+      if (response.ok) {
+        const data = await response.json()
+        console.log('Fetched emotional states:', data)
+        console.log('Emotional states array length:', data.length)
+        console.log('First emotional state:', data[0])
+        setEmotionalStates(data)
+      } else {
+        console.error('Failed to fetch emotional states, status:', response.status)
+      }
+    } catch (error) {
+      console.error('Failed to fetch emotional states:', error)
+    }
+  }
 
   const fetchTasks = async () => {
     try {
@@ -162,6 +206,26 @@ const formatForSQL = (date) => {
   }
 
   const handleCompleteTask = async (taskId) => {
+    // Find the task to check if it was delayed
+    const task = tasks.find(t => t.task_id === taskId)
+    if (!task) return
+
+    const now = new Date()
+    const plannedEnd = new Date(task.planned_end || task.planned_end_time)
+    const wasDelayed = now > plannedEnd
+
+    // If delayed, show the delay modal to capture reason and emotion
+    if (wasDelayed) {
+      setCompletingTask(task)
+      setShowDelayModal(true)
+      return
+    }
+
+    // If not delayed, complete normally
+    await completeTaskDirectly(taskId)
+  }
+
+  const completeTaskDirectly = async (taskId) => {
     try {
       const response = await fetch(`http://localhost:5000/api/tasks/${taskId}/complete`, {
         method: 'POST',
@@ -183,6 +247,57 @@ const formatForSQL = (date) => {
       console.error('Failed to complete task:', error)
       alert('Failed to complete task. Make sure the backend server is running.')
     }
+  }
+
+  const handleSubmitDelay = async (e) => {
+    e.preventDefault()
+    
+    if (!completingTask) return
+
+    try {
+      // Calculate delay duration in minutes
+      const now = new Date()
+      const plannedEnd = new Date(completingTask.planned_end || completingTask.planned_end_time)
+      const delayMinutes = Math.round((now - plannedEnd) / (1000 * 60))
+
+      // First, complete the task
+      await completeTaskDirectly(completingTask.task_id)
+
+      // Then, create a procrastination log
+      const logResponse = await fetch('http://localhost:5000/api/procrastination-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          task_id: completingTask.task_id,
+          user_id: userId,
+          reason_id: delayData.reason_id,
+          emotional_id: delayData.emotional_id,
+          duration_minutes: delayMinutes > 0 ? delayMinutes : 1,
+          date: new Date().toISOString().split('T')[0]
+        })
+      })
+
+      if (logResponse.ok) {
+        alert('Task completed and delay logged!')
+        closeDelayModal()
+      } else {
+        alert('Task completed but failed to log delay')
+        closeDelayModal()
+      }
+    } catch (error) {
+      console.error('Failed to log delay:', error)
+      alert('Task completed but failed to log delay')
+      closeDelayModal()
+    }
+  }
+
+  const closeDelayModal = () => {
+    setShowDelayModal(false)
+    setCompletingTask(null)
+    setDelayData({
+      reason_id: '',
+      emotional_id: ''
+    })
   }
 
   
@@ -280,6 +395,22 @@ const formatForSQL = (date) => {
     })
   }
 
+  const isTaskDelayed = (task) => {
+    const status = getTaskStatus(task)
+    if (status === 'completed') return false
+    
+    const now = new Date()
+    const plannedEnd = new Date(task.planned_end || task.planned_end_time)
+    return now > plannedEnd
+  }
+
+  const getDelayMinutes = (task) => {
+    const now = new Date()
+    const plannedEnd = new Date(task.planned_end || task.planned_end_time)
+    const delayMs = now - plannedEnd
+    return Math.round(delayMs / (1000 * 60))
+  }
+
   return (
     <div className="tasks-page">
       <div className="page-header">
@@ -300,7 +431,12 @@ const formatForSQL = (date) => {
           </div>
         ) : (
           tasks.map(task => (
-            <div key={task.task_id} className="task-card">
+            <div key={task.task_id} className={`task-card ${isTaskDelayed(task) ? 'task-delayed' : ''}`}>
+              {isTaskDelayed(task) && (
+                <div className="delay-badge">
+                  ⏰ Delayed by {getDelayMinutes(task)} min
+                </div>
+              )}
               <div className="task-header">
                 <h3 className="task-title">{task.task_name}</h3>
                 <div className="task-actions">
@@ -454,6 +590,76 @@ const formatForSQL = (date) => {
                 </button>
                 <button type="submit" className="btn btn-primary">
                   {editingTask ? 'Update Task' : 'Create Task'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showDelayModal && completingTask && (
+        <div className="modal-overlay" onClick={closeDelayModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>⏱️ Task Completed Late</h3>
+              <button className="icon-btn" onClick={closeDelayModal}>
+                <IconClose />
+              </button>
+            </div>
+
+            <div className="delay-info">
+              <p><strong>Task:</strong> {completingTask.task_name}</p>
+              <p><strong>Planned End:</strong> {formatDateTime(completingTask.planned_end || completingTask.planned_end_time)}</p>
+              <p className="delay-message">
+                💡 This task was completed after the planned time. Help us understand what happened so we can provide better insights!
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmitDelay} className="task-form">
+              <div className="form-group">
+                <label htmlFor="delay-reason">Why was this task delayed? *</label>
+                <select
+                  id="delay-reason"
+                  value={delayData.reason_id}
+                  onChange={(e) => setDelayData({...delayData, reason_id: e.target.value})}
+                  required
+                >
+                  <option value="">Select a reason...</option>
+                  {reasons.map(reason => (
+                    <option key={reason.reason_id} value={reason.reason_id}>
+                      {reason.reason_text}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="delay-emotion">How did you feel during/after? *</label>
+                <select
+                  id="delay-emotion"
+                  value={delayData.emotional_id}
+                  onChange={(e) => setDelayData({...delayData, emotional_id: e.target.value})}
+                  required
+                >
+                  <option value="">Select an emotional state...</option>
+                  {emotionalStates.map(state => (
+                    <option key={state.emotional_id} value={state.emotional_id}>
+                      {state.emotion_text}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-info">
+                <p>🎯 Your input helps identify patterns and improve your productivity over time!</p>
+              </div>
+
+              <div className="form-actions">
+                <button type="button" className="btn btn-outline" onClick={closeDelayModal}>
+                  Skip & Complete
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Complete & Log
                 </button>
               </div>
             </form>

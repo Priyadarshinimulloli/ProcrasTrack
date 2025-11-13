@@ -6,7 +6,7 @@ import DashboardHome from './components/DashboardHome'
 import Tasks from './components/Tasks'
 import ProcrastinationLog from './components/ProcrastinationLog'
 import ProcrastinationDetails from './components/ProcrastinationDetails'
-import Insights from './components/Insights'
+import Analytics from './components/Analytics'
 import './App.css'
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
           <Route path="tasks" element={<Tasks />} />
           <Route path="procrastination-log" element={<ProcrastinationLog />} />
           <Route path="procrastination-log/:logId" element={<ProcrastinationDetails />} />
-          <Route path="insights" element={<Insights />} />
+          <Route path="insights" element={<Analytics />} />
         </Route>
         <Route path="/admindashboard" element={<AdminDashboard />} />
       </Routes>
