@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import './Sidebar.css'
-import logo from '../assets/image.png'
+import logo from '../assets/logo.jpeg'
 
 function IconTasks() {
   return (
