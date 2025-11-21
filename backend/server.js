@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const db = require('./db/db.js');
+const { generateWeeklyReport } = require('./weeklyReport');
 
 dotenv.config({silent:true});
 const app = express();
@@ -225,7 +226,6 @@ app.get('/api/emotional-states', (req, res) => {
       console.error('Error fetching emotional states:', err);
       return res.status(500).json({ error: err.message });
     }
-    console.log('Emotional states from DB:', results);
     res.json(results);
   });
 });
@@ -400,8 +400,6 @@ app.get('/api/analytics', (req, res) => {
                   return res.status(500).json({ error: err7.message });
                 }
                 analytics.delayTrends = trendsResults;
-
-                console.log('Analytics data fetched for user:', user_id);
                 res.json(analytics);
               });
             });
@@ -455,6 +453,18 @@ app.post('/api/procrastination-logs', (req, res) => {
 });
 
 
+app.get('/api/reports/weekly', async (req, res) => {
+  const { user_id, date } = req.query;
+  if (!user_id || !date) return res.status(400).json({ message: 'user_id and date are required' });
+
+  try {
+    const report = await generateWeeklyReport(user_id, date);
+    res.json(report);
+  } catch (err) {
+    console.error('Error generating report:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
