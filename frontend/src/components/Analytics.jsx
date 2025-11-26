@@ -427,7 +427,18 @@ Keep up the great work! 🚀
     return recommendations
   }
 
-  const COLORS = ['#540863', '#92487A', '#E49BA6', '#FFD3D5', '#FF9800', '#4CAF50', '#2196F3', '#9C27B0']
+  const COLORS = [
+    '#FF6B6B', // Vibrant Red
+    '#4ECDC4', // Turquoise
+    '#45B7D1', // Sky Blue
+    '#FFA07A', // Light Salmon
+    '#98D8C8', // Mint
+    '#F7DC6F', // Yellow
+    '#BB8FCE', // Purple
+    '#85C1E2', // Light Blue
+    '#F8B739', // Orange
+    '#52C882'  // Green
+  ]
 
   if (loading) {
     return (
@@ -581,17 +592,30 @@ Keep up the great work! 🚀
             <h3 className="chart-title">Most Common Reasons for Delay</h3>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={analytics.reasonsBreakdown}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#FFD3D5" />
-                <XAxis dataKey="reason_text" stroke="#540863" />
-                <YAxis stroke="#540863" />
+                <defs>
+                  {analytics.reasonsBreakdown.map((entry, index) => (
+                    <linearGradient key={`gradient-${index}`} id={`colorReason${index}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.6}/>
+                    </linearGradient>
+                  ))}
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E0E7FF" />
+                <XAxis dataKey="reason_text" stroke="#4B5563" style={{ fontSize: '12px' }} />
+                <YAxis stroke="#4B5563" />
                 <Tooltip 
                   contentStyle={{ 
                     background: 'white', 
-                    border: '2px solid #FFD3D5',
-                    borderRadius: '12px'
+                    border: '2px solid #FF6B6B',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }} 
                 />
-                <Bar dataKey="count" fill="#92487A" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+                  {analytics.reasonsBreakdown.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={`url(#colorReason${index})`} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -626,19 +650,30 @@ Keep up the great work! 🚀
             <h3 className="chart-title">Delays by Category</h3>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={analytics.categoryDelays}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#FFD3D5" />
-                <XAxis dataKey="category" stroke="#540863" />
-                <YAxis stroke="#540863" />
+                <defs>
+                  <linearGradient id="colorBar2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#4ECDC4" stopOpacity={1}/>
+                    <stop offset="100%" stopColor="#44A3A0" stopOpacity={1}/>
+                  </linearGradient>
+                  <linearGradient id="colorBar3" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#FFA07A" stopOpacity={1}/>
+                    <stop offset="100%" stopColor="#FF8C5A" stopOpacity={1}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E0E7FF" />
+                <XAxis dataKey="category" stroke="#4B5563" style={{ fontSize: '12px' }} />
+                <YAxis stroke="#4B5563" />
                 <Tooltip 
                   contentStyle={{ 
                     background: 'white', 
-                    border: '2px solid #FFD3D5',
-                    borderRadius: '12px'
+                    border: '2px solid #4ECDC4',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }} 
                 />
                 <Legend />
-                <Bar dataKey="delay_count" fill="#540863" name="Number of Delays" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="avg_delay" fill="#E49BA6" name="Avg Delay (min)" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="delay_count" fill="url(#colorBar2)" name="Number of Delays" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="avg_delay" fill="url(#colorBar3)" name="Avg Delay (min)" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -649,18 +684,30 @@ Keep up the great work! 🚀
             <h3 className="chart-title">Delay Trends (Last 30 Days)</h3>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={analytics.delayTrends}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#FFD3D5" />
+                <defs>
+                  <linearGradient id="colorLine1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#45B7D1" stopOpacity={0.8}/>
+                    <stop offset="100%" stopColor="#45B7D1" stopOpacity={0.1}/>
+                  </linearGradient>
+                  <linearGradient id="colorLine2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#F8B739" stopOpacity={0.8}/>
+                    <stop offset="100%" stopColor="#F8B739" stopOpacity={0.1}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E0E7FF" />
                 <XAxis 
                   dataKey="date" 
-                  stroke="#540863"
+                  stroke="#4B5563"
+                  style={{ fontSize: '12px' }}
                   tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 />
-                <YAxis stroke="#540863" />
+                <YAxis stroke="#4B5563" />
                 <Tooltip 
                   contentStyle={{ 
                     background: 'white', 
-                    border: '2px solid #FFD3D5',
-                    borderRadius: '12px'
+                    border: '2px solid #45B7D1',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }}
                   labelFormatter={(date) => new Date(date).toLocaleDateString()}
                 />
@@ -668,18 +715,22 @@ Keep up the great work! 🚀
                 <Line 
                   type="monotone" 
                   dataKey="delay_count" 
-                  stroke="#540863" 
-                  strokeWidth={3}
+                  stroke="#45B7D1" 
+                  strokeWidth={4}
                   name="Number of Delays"
-                  dot={{ fill: '#540863', r: 5 }}
+                  dot={{ fill: '#45B7D1', r: 6, strokeWidth: 2, stroke: '#fff' }}
+                  activeDot={{ r: 8, strokeWidth: 2 }}
+                  fill="url(#colorLine1)"
                 />
                 <Line 
                   type="monotone" 
                   dataKey="avg_delay" 
-                  stroke="#E49BA6" 
-                  strokeWidth={3}
+                  stroke="#F8B739" 
+                  strokeWidth={4}
                   name="Avg Delay Duration (min)"
-                  dot={{ fill: '#E49BA6', r: 5 }}
+                  dot={{ fill: '#F8B739', r: 6, strokeWidth: 2, stroke: '#fff' }}
+                  activeDot={{ r: 8, strokeWidth: 2 }}
+                  fill="url(#colorLine2)"
                 />
               </LineChart>
             </ResponsiveContainer>
