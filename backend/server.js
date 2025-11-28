@@ -206,6 +206,47 @@ app.put('/api/tasks/:id', (req, res) => {
   });
 });
 
+// Delete a task
+app.delete('/api/tasks/:id', (req, res) => {
+  const taskId = req.params.id;
+  const userId = req.query.user_id;
+
+  if (!userId) return res.status(400).json({ message: 'Missing user_id query parameter' });
+
+  // Verify ownership
+  const checkSql = 'SELECT * FROM usertasks WHERE task_id = ? AND user_id = ?';
+  db.query(checkSql, [taskId, userId], (checkErr, checkRes) => {
+    if (checkErr) {
+      console.error('Error checking task ownership:', checkErr);
+      return res.status(500).json({ error: checkErr.message });
+    }
+
+    if (!checkRes || checkRes.length === 0) {
+      return res.status(403).json({ message: 'User does not own this task' });
+    }
+
+    // Delete from usertasks first (foreign key constraint)
+    const deleteUserTaskSql = 'DELETE FROM usertasks WHERE task_id = ? AND user_id = ?';
+    db.query(deleteUserTaskSql, [taskId, userId], (deleteUserTaskErr) => {
+      if (deleteUserTaskErr) {
+        console.error('Error deleting from usertasks:', deleteUserTaskErr);
+        return res.status(500).json({ error: deleteUserTaskErr.message });
+      }
+
+      // Then delete the task itself
+      const deleteTaskSql = 'DELETE FROM tasks WHERE task_id = ?';
+      db.query(deleteTaskSql, [taskId], (deleteTaskErr) => {
+        if (deleteTaskErr) {
+          console.error('Error deleting task:', deleteTaskErr);
+          return res.status(500).json({ error: deleteTaskErr.message });
+        }
+
+        res.json({ message: 'Task deleted successfully' });
+      });
+    });
+  });
+});
+
 // Get all reasons for procrastination
 app.get('/api/reasons', (req, res) => {
   const sql = 'SELECT * FROM reason ORDER BY reason_id';

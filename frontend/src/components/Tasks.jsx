@@ -57,6 +57,19 @@ export default function Tasks() {
   const [completingTask, setCompletingTask] = useState(null)
   const [reasons, setReasons] = useState([])
   const [emotionalStates, setEmotionalStates] = useState([])
+  
+  // Filter states
+  const [filterOption, setFilterOption] = useState('all') // 'all', 'today', 'week', 'month', 'custom'
+  const [customStartDate, setCustomStartDate] = useState('')
+  const [customEndDate, setCustomEndDate] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all') // 'all', 'completed', 'in-progress', 'pending'
+  
+  // Track which tasks have been notified to avoid duplicate alerts
+  const [notifiedTasks, setNotifiedTasks] = useState(new Set())
+  
+  // Track hidden tasks (frontend-only delete)
+  const [hiddenTasks, setHiddenTasks] = useState(new Set())
+  
   const [formData, setFormData] = useState({
     title: '',
     category: '',
@@ -76,6 +89,66 @@ export default function Tasks() {
     fetchTasks()
     fetchReasons()
     fetchEmotionalStates()
+  }, [])
+
+  // Check for overdue tasks every minute
+  useEffect(() => {
+    const checkOverdueTasks = () => {
+      const now = new Date()
+      
+      tasks.forEach(task => {
+        const status = getTaskStatus(task)
+        
+        // Only check in-progress tasks
+        if (status !== 'in-progress') return
+        
+        // Check if task has crossed planned end time
+        const plannedEnd = new Date(task.planned_end || task.planned_end_time)
+        const isOverdue = now > plannedEnd
+        
+        // Show notification if overdue and not already notified
+        if (isOverdue && !notifiedTasks.has(task.task_id)) {
+          showOverdueNotification(task, now, plannedEnd)
+          setNotifiedTasks(prev => new Set([...prev, task.task_id]))
+        }
+      })
+    }
+
+    // Check immediately and then every minute
+    checkOverdueTasks()
+    const interval = setInterval(checkOverdueTasks, 60000) // 60 seconds
+
+    return () => clearInterval(interval)
+  }, [tasks, notifiedTasks])
+
+  const showOverdueNotification = (task, currentTime, plannedEnd) => {
+    const delayMinutes = Math.round((currentTime - plannedEnd) / (1000 * 60))
+    
+    // Create a custom alert with better styling
+    const message = `⏰ Task Overdue Alert!\n\n` +
+                   `Task: ${task.task_name}\n` +
+                   `Category: ${task.category}\n` +
+                   `Planned End: ${formatDateTime(plannedEnd)}\n` +
+                   `Current Delay: ${delayMinutes} minute(s)\n\n` +
+                   `Please complete this task or update its timeline.`
+    
+    alert(message)
+    
+    // Optional: Use browser notification API if permission granted
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("Task Overdue!", {
+        body: `${task.task_name} is ${delayMinutes} minute(s) overdue`,
+        icon: "⏰",
+        tag: `task-${task.task_id}` // Prevents duplicate notifications
+      })
+    }
+  }
+
+  // Request notification permission on component mount
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission()
+    }
   }, [])
 
   const fetchReasons = async () => {
@@ -237,6 +310,12 @@ const formatForSQL = (date) => {
       })
 
       if (response.ok) {
+        // Clear notification flag for this task
+        setNotifiedTasks(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(taskId)
+          return newSet
+        })
         fetchTasks()
         alert('Task completed!')
       } else {
@@ -301,8 +380,25 @@ const formatForSQL = (date) => {
   }
 
   
-  const handleDelete = async (taskId) => {
-    if (!confirm('Are you sure you want to delete this task?')) return
+  const handleHideTask = (taskId) => {
+    if (!confirm('Hide this task from view? (Task will remain in database)')) return
+    
+    // Add task to hidden set
+    setHiddenTasks(prev => new Set([...prev, taskId]))
+    
+    // Clear notification flag if exists
+    setNotifiedTasks(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(taskId)
+      return newSet
+    })
+    
+    alert('Task hidden from view. Refresh page to see it again.')
+  }
+
+  const handlePermanentDelete = async (taskId) => {
+    const confirmMsg = 'Are you sure you want to PERMANENTLY DELETE this task from the database?\n\nThis action cannot be undone!'
+    if (!confirm(confirmMsg)) return
 
     try {
       const response = await fetch(`http://localhost:5000/api/tasks/${taskId}?user_id=${userId}`, {
@@ -311,7 +407,7 @@ const formatForSQL = (date) => {
 
       if (response.ok) {
         fetchTasks()
-        alert('Task deleted!')
+        alert('Task permanently deleted from database!')
       } else {
         const errorData = await response.json().catch(() => ({}))
         alert(`Failed to delete task: ${errorData.message || response.statusText}`)
@@ -411,6 +507,82 @@ const formatForSQL = (date) => {
     return Math.round(delayMs / (1000 * 60))
   }
 
+  // Filter helper functions
+  const getDateRange = (option) => {
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    
+    switch(option) {
+      case 'today':
+        return {
+          start: today,
+          end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59)
+        }
+      case 'week':
+        const weekStart = new Date(today)
+        weekStart.setDate(today.getDate() - today.getDay())
+        const weekEnd = new Date(weekStart)
+        weekEnd.setDate(weekStart.getDate() + 6)
+        weekEnd.setHours(23, 59, 59)
+        return { start: weekStart, end: weekEnd }
+      case 'month':
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1)
+        const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59)
+        return { start: monthStart, end: monthEnd }
+      case 'custom':
+        if (customStartDate && customEndDate) {
+          return {
+            start: new Date(customStartDate),
+            end: new Date(new Date(customEndDate).setHours(23, 59, 59))
+          }
+        }
+        return null
+      default:
+        return null
+    }
+  }
+
+  const filterTasks = () => {
+    let filtered = [...tasks]
+    
+    // Filter out hidden tasks first
+    filtered = filtered.filter(task => !hiddenTasks.has(task.task_id))
+    
+    // Filter by status
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(task => getTaskStatus(task) === statusFilter)
+    }
+    
+    // Filter by completion date (only for completed tasks)
+    if (filterOption !== 'all') {
+      const dateRange = getDateRange(filterOption)
+      
+      if (dateRange) {
+        filtered = filtered.filter(task => {
+          const status = getTaskStatus(task)
+          if (status !== 'completed') return false
+          
+          const completionDate = task.actual_end || task.actual_end_time
+          if (!completionDate) return false
+          
+          const taskDate = new Date(completionDate)
+          return taskDate >= dateRange.start && taskDate <= dateRange.end
+        })
+      }
+    }
+    
+    return filtered
+  }
+
+  const filteredTasks = filterTasks()
+
+  const resetFilters = () => {
+    setFilterOption('all')
+    setStatusFilter('all')
+    setCustomStartDate('')
+    setCustomEndDate('')
+  }
+
   return (
     <div className="tasks-page">
       <div className="page-header">
@@ -424,13 +596,106 @@ const formatForSQL = (date) => {
         </button>
       </div>
 
+      {/* Filter Section */}
+      <div className="filter-section">
+        <div className="filter-header">
+          <h3 className="filter-title">🔍 Filter Tasks</h3>
+          <button className="btn-reset" onClick={resetFilters}>
+            Reset Filters
+          </button>
+        </div>
+        
+        <div className="filter-controls">
+          {/* Status Filter */}
+          <div className="filter-group">
+            <label htmlFor="status-filter">Status</label>
+            <select 
+              id="status-filter"
+              className="filter-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+
+          {/* Completion Date Filter */}
+          <div className="filter-group">
+            <label htmlFor="date-filter">Completed Date</label>
+            <select 
+              id="date-filter"
+              className="filter-select"
+              value={filterOption}
+              onChange={(e) => setFilterOption(e.target.value)}
+            >
+              <option value="all">All Time</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="custom">Custom Range</option>
+            </select>
+          </div>
+
+          {/* Custom Date Range */}
+          {filterOption === 'custom' && (
+            <>
+              <div className="filter-group">
+                <label htmlFor="start-date">Start Date</label>
+                <input
+                  id="start-date"
+                  type="date"
+                  className="filter-input"
+                  value={customStartDate}
+                  onChange={(e) => setCustomStartDate(e.target.value)}
+                />
+              </div>
+              <div className="filter-group">
+                <label htmlFor="end-date">End Date</label>
+                <input
+                  id="end-date"
+                  type="date"
+                  className="filter-input"
+                  value={customEndDate}
+                  onChange={(e) => setCustomEndDate(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+        </div>
+        
+        {/* Filter Summary */}
+        <div className="filter-summary">
+          <span className="summary-text">
+            Showing <strong>{filteredTasks.length}</strong> of <strong>{tasks.length}</strong> tasks
+            {statusFilter !== 'all' && <span className="filter-badge">{statusFilter}</span>}
+            {filterOption !== 'all' && (
+              <span className="filter-badge">
+                {filterOption === 'custom' ? 'Custom Date' : filterOption}
+              </span>
+            )}
+          </span>
+        </div>
+      </div>
+
       <div className="tasks-grid">
-        {tasks.length === 0 ? (
+        {filteredTasks.length === 0 ? (
           <div className="empty-state">
-            <p>No tasks yet. Create your first task to get started!</p>
+            {tasks.length === 0 ? (
+              <p>No tasks yet. Create your first task to get started!</p>
+            ) : (
+              <div>
+                <p>No tasks match your current filters.</p>
+                <button className="btn btn-outline" onClick={resetFilters} style={{marginTop: '1rem'}}>
+                  Clear Filters
+                </button>
+              </div>
+            )}
           </div>
         ) : (
-          tasks.map(task => (
+          filteredTasks.map(task => (
             <div key={task.task_id} className={`task-card ${isTaskDelayed(task) ? 'task-delayed' : ''}`}>
               {isTaskDelayed(task) && (
                 <div className="delay-badge">
@@ -452,13 +717,24 @@ const formatForSQL = (date) => {
                     ✏️
                   </button>
                   <button 
+                    className="icon-btn warning" 
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleHideTask(task.task_id)
+                    }} 
+                    aria-label="Hide"
+                    title="Hide Task (Frontend Only)"
+                  >
+                    👁️‍🗨️
+                  </button>
+                  <button 
                     className="icon-btn danger" 
                     onClick={(e) => {
                       e.stopPropagation()
-                      handleDelete(task.task_id)
+                      handlePermanentDelete(task.task_id)
                     }} 
-                    aria-label="Delete"
-                    title="Delete Task"
+                    aria-label="Delete Permanently"
+                    title="Delete Permanently from Database"
                   >
                     🗑️
                   </button>

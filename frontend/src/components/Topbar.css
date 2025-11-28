@@ -6,7 +6,7 @@
   border-bottom: 2px solid var(--color-accent-light);
   position: fixed;
   top: 0;
-  left: 260px;
+  left: 280px;
   right: 0;
   z-index: 90;
   box-shadow: 0 2px 8px rgba(84, 8, 99, 0.06);
@@ -14,10 +14,13 @@
 
 .topbar-content {
   height: 100%;
-  padding: 0 3rem;
+  padding: 0 clamp(1rem, 2vw, 3rem);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: min(1600px, 100%);
+  margin: 0 auto;
+  width: 100%;
 }
 
 .topbar-left {
