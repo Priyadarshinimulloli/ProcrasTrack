@@ -65,8 +65,8 @@
 /* Stats Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: clamp(1rem, 2vw, 1.5rem);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4rem;
   margin-bottom: var(--spacing-3xl);
   width: 100%;
 }
@@ -74,11 +74,11 @@
 .stat-card {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 245, 247, 0.95) 100%);
   border-radius: var(--radius-xl);
-  padding: clamp(1.25rem, 2vw, 1.75rem);
+  padding: 3rem;
   border: 2px solid var(--color-border);
   display: flex;
   align-items: center;
-  gap: clamp(1rem, 2vw, 1.5rem);
+  gap: 3rem;
   transition: all var(--transition-slow);
   position: relative;
   overflow: hidden;
@@ -126,8 +126,8 @@
 .stat-icon {
   min-width: var(--touch-target-min);
   min-height: var(--touch-target-min);
-  width: clamp(56px, 10vw, 72px);
-  height: clamp(56px, 10vw, 72px);
+  width: 64px;
+  height: 64px;
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
@@ -317,9 +317,10 @@
    RESPONSIVE DESIGN
    ============================================ */
 
-/* Tablet: Keep 2 columns */
+/* Tablet: 2 columns */
 @media (max-width: 900px) and (min-width: 641px) {
   .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-md);
   }
   

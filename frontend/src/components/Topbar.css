@@ -18,7 +18,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: min(1600px, 100%);
   margin: 0 auto;
   width: 100%;
 }
