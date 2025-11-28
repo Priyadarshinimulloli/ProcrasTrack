@@ -44,20 +44,22 @@
 /* Stats Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
   margin-bottom: 2.5rem;
 }
 
 .stat-card {
   background: white;
-  border-radius: 20px;
-  padding: 1.75rem;
+  border-radius: 16px;
+  padding: 1.25rem;
   border: 2px solid var(--color-accent-light);
   box-shadow: 0 2px 12px rgba(84, 8, 99, 0.08);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
+  text-align: center;
+  gap: 0.75rem;
   transition: all 0.3s ease;
 }
 
@@ -68,9 +70,9 @@
 }
 
 .stat-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,8 +80,8 @@
 }
 
 .stat-icon svg {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   color: white;
 }
 
@@ -115,7 +117,7 @@
 }
 
 .stat-value {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
@@ -125,7 +127,7 @@
 }
 
 .stat-label {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
   font-weight: 600;
 }
@@ -286,25 +288,41 @@
 
 /* Responsive */
 @media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
   .charts-section {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
   .stat-card {
-    flex-direction: column;
-    text-align: center;
+    padding: 1rem;
   }
 
   .stat-icon {
-    width: clamp(44px, 10vw, 56px);
-    height: clamp(44px, 10vw, 56px);
+    width: 40px;
+    height: 40px;
   }
 
   .stat-icon svg {
-    width: clamp(20px, 5vw, 28px);
-    height: clamp(20px, 5vw, 28px);
+    width: 20px;
+    height: 20px;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+  }
+  
+  .stat-label {
+    font-size: 0.75rem;
   }
 
   .recommendation-card {
@@ -333,6 +351,7 @@
   .stat-card {
     flex-direction: row;
     text-align: left;
+    gap: 1rem;
   }
   
   .btn-download span {
@@ -341,16 +360,5 @@
   
   .btn-download svg {
     margin: 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .stat-card {
-    flex-direction: row;
-    text-align: left;
   }
 }
