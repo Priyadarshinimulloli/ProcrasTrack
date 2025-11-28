@@ -77,10 +77,19 @@ export default function DashboardHome() {
             return total + duration
           }, 0)
 
+        // Fetch procrastination logs count
+        const logsResponse = await fetch(`http://localhost:5000/api/procrastination-logs?user_id=${userId}`)
+        let procrastinationLogsCount = 0
+        
+        if (logsResponse.ok) {
+          const logs = await logsResponse.json()
+          procrastinationLogsCount = logs.length
+        }
+
         setStats({
           totalTasks,
           completedTasks,
-          procrastinationLogs: 0, // TODO: Fetch from API when procrastination logs endpoint is ready
+          procrastinationLogs: procrastinationLogsCount,
           focusTime: Math.round(focusTime)
         })
       }

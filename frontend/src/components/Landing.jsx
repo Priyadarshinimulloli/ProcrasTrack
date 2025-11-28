@@ -55,27 +55,27 @@ function Hero({ onOpenUser, onOpenAdmin }) {
         <div className="hero-content">
           <h1 className="hero-title">Track distractions. Build focus. Get things done.</h1>
           <p className="hero-subtitle">
-            ProcrastiNot helps you understand your procrastination patterns, set achievable goals, 
+            ProcrasTrack helps you understand your procrastination patterns, set achievable goals, 
             and celebrate progress—one focused session at a time.
           </p>
-          <ul className="hero-features">
-            <li><IconCheck /> <span>Visualize your habits</span></li>
-            <li><IconCheck /> <span>Set focused goals</span></li>
-            <li><IconCheck /> <span>Track accountability & insights</span></li>
-          </ul>
+          <div className="hero-features">
+            <p>Visualize your habits</p>
+            <p>Set focused goals</p>
+            <p>Track accountability & insights</p>
+          </div>
         </div>
         <div className="hero-cta">
           <h2 className="cta-title">Choose your path</h2>
           <div className="cta-buttons">
             <button className="role-card" onClick={onOpenUser}>
-              <div className="role-icon user-icon">
+              <div className="role-card-icon">
                 <IconUser />
               </div>
               <h3>I'm a User</h3>
               <p>Track your habits and build focus</p>
             </button>
             <button className="role-card" onClick={onOpenAdmin}>
-              <div className="role-icon admin-icon">
+              <div className="role-card-icon">
                 <IconShield />
               </div>
               <h3>I'm an Admin</h3>

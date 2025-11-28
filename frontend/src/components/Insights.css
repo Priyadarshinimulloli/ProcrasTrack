@@ -1,64 +1,31 @@
 /* Insights Page */
 .insights-page {
   width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: calc(100vh - 200px);
-  border-radius: 24px;
-  padding: 2rem;
-}
-
-.page-header {
-  margin-bottom: 3rem;
-}
-
-.page-heading {
-  color: white !important;
-  font-size: 2.5rem;
-  font-weight: 800;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-.page-subheading {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-size: 1.125rem;
 }
 
 .insights-placeholder {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 24px;
-  padding: 4rem 3rem;
+  background: transparent;
+  border-radius: 20px;
+  padding: 4rem 2rem;
   text-align: center;
   border: none;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
 }
 
 .placeholder-icon {
-  font-size: 5rem;
+  font-size: 4rem;
   margin-bottom: 1.5rem;
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
 }
 
 .insights-placeholder h3 {
-  font-size: 2.25rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0 0 1.5rem;
-  font-weight: 800;
+  font-size: 1.75rem;
+  color: #0f1724;
+  margin: 0 0 1rem;
 }
 
 .insights-placeholder p {
-  color: #4b5563;
-  font-size: 1.25rem;
-  margin: 0 0 2rem;
-  font-weight: 500;
+  color: #7b8a99;
+  font-size: 1.125rem;
+  margin: 0 0 1.5rem;
 }
 
 .insights-placeholder ul {
@@ -67,42 +34,19 @@
   margin: 0;
   display: inline-block;
   text-align: left;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-  border-radius: 16px;
-  padding: 2rem 3rem;
 }
 
 .insights-placeholder li {
-  color: #1f2937;
-  font-size: 1.125rem;
-  padding: 0.875rem 0;
+  color: #0f1724;
+  font-size: 1rem;
+  padding: 0.5rem 0;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  border-radius: 8px;
-  padding-left: 1rem;
-  margin: 0.5rem 0;
-}
-
-.insights-placeholder li:hover {
-  background: white;
-  transform: translateX(10px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  gap: 0.5rem;
 }
 
 .insights-placeholder li::before {
   content: '✓';
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
+  color: #16a34a;
   font-weight: 700;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
 }
