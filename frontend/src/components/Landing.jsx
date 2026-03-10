@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import logo from '../assets/logo.jpeg'
-
 import './Landing.css'
 
 // Icon components
@@ -51,6 +51,25 @@ function Nav() {
 function Hero({ onOpenUser, onOpenAdmin }) {
   return (
     <section className="hero">
+      <div className="hero-animations">
+        <div className="hero-lottie-left">
+          <DotLottieReact
+            src="/clock-animation.json"
+            loop
+            autoplay
+            style={{ width: '250px', height: '250px', opacity: 0.3 }}
+          />
+        </div>
+        <div className="hero-lottie-right">
+          <DotLottieReact
+            src="/working-animation.json"
+            loop
+            autoplay
+            style={{ width: '220px', height: '220px', opacity: 0.35 }}
+          />
+        </div>
+      </div>
+      
       <div className="hero-container">
         <div className="hero-content">
           <h1 className="hero-title">Track distractions. Build focus. Get things done.</h1>
@@ -59,9 +78,9 @@ function Hero({ onOpenUser, onOpenAdmin }) {
             and celebrate progress—one focused session at a time.
           </p>
           <div className="hero-features">
-            <p>Visualize your habits</p>
-            <p>Set focused goals</p>
-            <p>Track accountability & insights</p>
+            <p><span className="feature-icon">📊</span> Visualize your habits</p>
+            <p><span className="feature-icon">🎯</span> Set focused goals</p>
+            <p><span className="feature-icon">📈</span> Track accountability & insights</p>
           </div>
         </div>
         <div className="hero-cta">
@@ -315,12 +334,65 @@ function AdminAuthModal({ onClose }) {
   )
 }
 
+// Features Section
+function Features() {
+  return (
+    <section className="features-section">
+      <div className="features-container">
+        <h2 className="features-title">Why Choose ProcrasTrack?</h2>
+        <p className="features-subtitle">Everything you need to beat procrastination and boost productivity</p>
+        
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="feature-animation">
+              <DotLottieReact
+                src="/clock-animation.json"
+                loop
+                autoplay
+                style={{ width: '100px', height: '100px' }}
+              />
+            </div>
+            <h3>Smart Tracking</h3>
+            <p>Log procrastination events and understand when and why you get distracted</p>
+          </div>
+          
+          <div className="feature-card">
+            <div className="feature-animation">
+              <DotLottieReact
+                src="/web-design-animation.json"
+                loop
+                autoplay
+                style={{ width: '100px', height: '100px' }}
+              />
+            </div>
+            <h3>Visual Analytics</h3>
+            <p>Beautiful charts and insights to visualize your productivity patterns</p>
+          </div>
+          
+          <div className="feature-card">
+            <div className="feature-animation">
+              <DotLottieReact
+                src="/working-animation.json"
+                loop
+                autoplay
+                style={{ width: '100px', height: '100px' }}
+              />
+            </div>
+            <h3>Task Management</h3>
+            <p>Organize tasks, set priorities, and track completion with ease</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // Footer
 function Footer() {
   return (
     <footer className="landing-footer">
       <div className="footer-container">
-        <p>© {new Date().getFullYear()} FocusTrack — Designed to help you build lasting focus.</p>
+        <p>© {new Date().getFullYear()} ProcrasTrack — Designed to help you build lasting focus.</p>
         <div className="footer-links">
           <a href="#privacy">Privacy</a>
           <a href="#terms">Terms</a>
@@ -338,12 +410,40 @@ export default function Landing() {
 
   return (
     <div className="landing-page">
+      <div className="floating-decorations">
+        <div className="floating-lottie floating-1">
+          <DotLottieReact
+            src="/clock-animation.json"
+            loop
+            autoplay
+            style={{ width: '120px', height: '120px', opacity: 0.15 }}
+          />
+        </div>
+        <div className="floating-lottie floating-2">
+          <DotLottieReact
+            src="/web-design-animation.json"
+            loop
+            autoplay
+            style={{ width: '140px', height: '140px', opacity: 0.12 }}
+          />
+        </div>
+        <div className="floating-lottie floating-3">
+          <DotLottieReact
+            src="/working-animation.json"
+            loop
+            autoplay
+            style={{ width: '100px', height: '100px', opacity: 0.18 }}
+          />
+        </div>
+      </div>
+      
       <Nav />
       <main>
         <Hero 
           onOpenUser={() => setShowUserModal(true)}
           onOpenAdmin={() => setShowAdminModal(true)}
         />
+        <Features />
       </main>
       <Footer />
 

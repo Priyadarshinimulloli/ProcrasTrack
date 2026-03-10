@@ -1,0 +1,24 @@
+.floating-lottie {
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+/* Add slight variations for different elements */
+.floating-lottie:nth-child(even) {
+  animation: float 8s ease-in-out infinite;
+}
+
+.floating-lottie:nth-child(3n) {
+  animation: float 10s ease-in-out infinite;
+}

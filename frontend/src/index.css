@@ -130,6 +130,7 @@ html {
 
 body {
   margin: 0;
+  padding: 0;
   font-family: var(--font-primary);
   font-size: var(--text-base);
   line-height: 1.7;
@@ -141,8 +142,11 @@ body {
   text-rendering: optimizeLegibility;
   font-feature-settings: 'kern' 1, 'liga' 1;
   letter-spacing: -0.01em;
-  min-height: 100vh;
   overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
 }
 
 /* Responsive Images */
