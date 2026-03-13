@@ -50,62 +50,42 @@ function Nav() {
 // Hero Section with User/Admin Buttons
 function Hero({ onOpenUser, onOpenAdmin }) {
   return (
-    <section className="hero">
-      <div className="hero-animations">
-        <div className="hero-lottie-left">
-          <DotLottieReact
-            src="/clock-animation.json"
-            loop
-            autoplay
-            style={{ width: '250px', height: '250px', opacity: 0.3 }}
-          />
-        </div>
-        <div className="hero-lottie-right">
-          <DotLottieReact
-            src="/working-animation.json"
-            loop
-            autoplay
-            style={{ width: '220px', height: '220px', opacity: 0.35 }}
-          />
-        </div>
-      </div>
-      
-      <div className="hero-container">
-        <div className="hero-content">
-          <h1 className="hero-title">Track distractions. Build focus. Get things done.</h1>
-          <p className="hero-subtitle">
-            ProcrasTrack helps you understand your procrastination patterns, set achievable goals, 
-            and celebrate progress—one focused session at a time.
-          </p>
-          <div className="hero-features">
-            <p><span className="feature-icon">📊</span> Visualize your habits</p>
-            <p><span className="feature-icon">🎯</span> Set focused goals</p>
-            <p><span className="feature-icon">📈</span> Track accountability & insights</p>
-          </div>
-        </div>
-        <div className="hero-cta">
-          <h2 className="cta-title">Choose your path</h2>
-          <div className="cta-buttons">
-            <button className="role-card" onClick={onOpenUser}>
-              <div className="role-card-icon">
-                <IconUser />
-              </div>
-              <h3>I'm a User</h3>
-              <p>Track your habits and build focus</p>
-            </button>
-            <button className="role-card" onClick={onOpenAdmin}>
-              <div className="role-card-icon">
-                <IconShield />
-              </div>
-              <h3>I'm an Admin</h3>
-              <p>Manage the platform</p>
-            </button>
-          </div>
+    <section className="hero hero-centered">
+      {/* Decorative blobs */}
+      <div className="hero-blob hero-blob-1"></div>
+      <div className="hero-blob hero-blob-2"></div>
+
+      <div className="hero-inner">
+        {/* Eyebrow label */}
+        <span className="hero-eyebrow">✦ Productivity Tracker</span>
+
+        {/* Giant headline */}
+        <h1 className="hero-mega-title">
+          Beat <em>Procrastination</em>.
+          <br />Own Your Time.
+        </h1>
+
+        {/* One-liner */}
+        <p className="hero-tagline">
+          Log what delays you. See the patterns. Build momentum.
+        </p>
+
+        {/* Role entry buttons */}
+        <div className="hero-actions">
+          <button className="hero-btn hero-btn-primary" onClick={onOpenUser}>
+            <span className="hero-btn-label">User Portal</span>
+            <span className="hero-btn-sub">Start tracking for free</span>
+          </button>
+          <button className="hero-btn hero-btn-ghost" onClick={onOpenAdmin}>
+            <span className="hero-btn-label">Admin Console</span>
+            <span className="hero-btn-sub">Manage dashboard access</span>
+          </button>
         </div>
       </div>
     </section>
   )
 }
+
 
 // User Auth Modal (Login & Signup)
 function UserAuthModal({ onClose }) {
@@ -114,64 +94,97 @@ function UserAuthModal({ onClose }) {
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
   const [occupation, setOccupation] = useState('')
-
+  
   const navigate = useNavigate(); 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  try {
-    let res, data;
-
-    if (mode === 'login') {
-      res = await fetch('http://localhost:5000/login', {
+  
+  // Custom Google auth function
+  const handleGoogleLogin = async () => {
+    try {
+      // Lazy load firebase to avoid issues if config isn't set yet
+      const { auth, googleProvider } = await import('../firebase');
+      const { signInWithPopup } = await import('firebase/auth');
+      
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      
+      // Send Firebase user data to our backend
+      const res = await fetch('http://localhost:5000/auth/firebase', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email: user.email,
+          displayName: user.displayName,
+          uid: user.uid,
+          photoURL: user.photoURL
+        }),
       });
-      data = await res.json();
-
+      
+      const data = await res.json();
+      
       if (res.ok) {
-        // Store user profile in localStorage
         localStorage.setItem('userId', data.userId);
         localStorage.setItem('username', data.username);
         localStorage.setItem('userEmail', data.email);
         if (data.occupation) localStorage.setItem('occupation', data.occupation);
         
-        alert(data.message);
+        alert("Google Login Successful!");
         navigate('/userdashboard'); 
         onClose(); 
       } else {
-        alert(data.message || 'Login failed');
+        alert(data.message || 'Backend Google Login failed');
       }
-
-    } else {
-      res = await fetch('http://localhost:5000/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password, occupation }),
-      });
-      data = await res.json();
-
-      if (res.ok) {
-        // Store user profile in localStorage
-        localStorage.setItem('userId', data.userId);
-        localStorage.setItem('username', data.username);
-        localStorage.setItem('userEmail', data.email);
-        if (occupation) localStorage.setItem('occupation', occupation);
-        
-        alert(data.message);
-        navigate('/userdashboard'); 
-        onClose(); 
+    } catch (err) {
+      console.error(err);
+      if (err.code === 'auth/invalid-api-key') {
+        alert("Firebase API Key is missing. Please add it to src/firebase.js");
       } else {
-        alert(data.message || 'Signup failed');
+        alert('Google Sign-In failed or was cancelled.');
       }
     }
+  };
 
-  } catch (err) {
-    console.error(err);
-    alert('Something went wrong. Please try again.');
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      let res, data;
+      if (mode === 'login') {
+        res = await fetch('http://localhost:5000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        data = await res.json();
+        if (res.ok) {
+          localStorage.setItem('userId', data.userId);
+          localStorage.setItem('username', data.username);
+          localStorage.setItem('userEmail', data.email);
+          if (data.occupation) localStorage.setItem('occupation', data.occupation);
+          alert(data.message);
+          navigate('/userdashboard'); 
+          onClose(); 
+        } else alert(data.message || 'Login failed');
+      } else {
+        res = await fetch('http://localhost:5000/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password, occupation }),
+        });
+        data = await res.json();
+        if (res.ok) {
+          localStorage.setItem('userId', data.userId);
+          localStorage.setItem('username', data.username);
+          localStorage.setItem('userEmail', data.email);
+          if (occupation) localStorage.setItem('occupation', occupation);
+          alert(data.message);
+          navigate('/userdashboard'); 
+          onClose(); 
+        } else alert(data.message || 'Signup failed');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Something went wrong. Please try again.');
+    }
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -185,6 +198,24 @@ const handleSubmit = async (e) => {
         <div className="modal-header">
           <h2>{mode === 'login' ? 'User Login' : 'Create User Account'}</h2>
           <p>Welcome! Please {mode === 'login' ? 'sign in' : 'create your account'} to continue.</p>
+        </div>
+        
+        <div className="modal-oauth">
+          <button type="button" className="btn btn-google btn-block" onClick={handleGoogleLogin} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', backgroundColor: '#fff', color: '#333', border: '1px solid #ccc', marginBottom: '15px' }}>
+            <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+              <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+              <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+              <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+            </svg>
+            Continue with Google
+          </button>
+          
+          <div className="auth-divider" style={{ display: 'flex', alignItems: 'center', textAlign: 'center', margin: '15px 0', color: '#888' }}>
+            <div style={{ flex: 1, borderBottom: '1px solid #eee' }}></div>
+            <span style={{ padding: '0 10px', fontSize: '13px' }}>OR</span>
+            <div style={{ flex: 1, borderBottom: '1px solid #eee' }}></div>
+          </div>
         </div>
 
         <div className="modal-tabs">

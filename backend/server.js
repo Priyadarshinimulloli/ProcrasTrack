@@ -3,6 +3,18 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const db = require('./db/db.js');
 const { generateWeeklyReport } = require('./weeklyReport');
+const admin = require('firebase-admin');
+
+// Initialize Firebase Admin (Wrapped in try/catch in case the JSON is still empty)
+try {
+  const serviceAccount = require('./firebaseAdmin.json');
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+  console.log("Firebase Admin Initialized successfully.");
+} catch (error) {
+  console.warn("⚠️ Firebase Admin could not be initialized. Did you fill out firebaseAdmin.json? Error:", error.message);
+}
 
 dotenv.config({silent:true});
 const app = express();
@@ -61,6 +73,65 @@ app.post('/login',(req,res)=>{
     });
   });
 
+});
+
+// Firebase Auth Route (Google Login)
+app.post('/auth/firebase', async (req, res) => {
+  const { email, displayName, uid, photoURL } = req.body;
+  console.log(`[Firebase Auth] Request received: email=${email}, displayName=${displayName}, uid=${uid}`);
+
+  if (!email || !uid) {
+    return res.status(400).json({ message: 'Missing Firebase user data' });
+  }
+
+  try {
+    // 1. Check if user already exists
+    const checkSql = "SELECT * FROM users WHERE user_email = ?";
+    db.query(checkSql, [email], (err, result) => {
+      if (err) {
+        console.error("Database error checking user:", err);
+        return res.status(500).json({ error: err.message });
+      }
+
+      console.log(`[Firebase Auth] DB check for ${email}: found ${result.length} rows`);
+      if (result.length > 0) {
+        // User exists, log them in
+        const user = result[0];
+        return res.json({
+          message: "Firebase Login successful",
+          userId: user.user_id,
+          username: user.user_name,
+          email: user.user_email,
+          occupation: user.occupation
+        });
+      } else {
+        // 2. User does not exist, create a new one
+        // We use a dummy password for OAuth users because they authenticate externally
+        const username = displayName || email.split('@')[0]; // Fallback to email prefix if no display name
+        const dummyPassword = '[GOOGLE_OAUTH_USER]';
+        const defaultOccupation = 'Not Specified';
+
+        const insertSql = "INSERT INTO users(user_name, user_email, user_password, occupation) VALUES(?,?,?,?)";
+        db.query(insertSql, [username, email, dummyPassword, defaultOccupation], (insertErr, insertResult) => {
+          if (insertErr) {
+            console.error("Database error creating Firebase user:", insertErr);
+            return res.status(500).json({ error: insertErr.message });
+          }
+
+          return res.status(201).json({
+            message: "Firebase User created successfully",
+            userId: insertResult.insertId,
+            username: username,
+            email: email,
+            occupation: defaultOccupation
+          });
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Firebase auth error:", error);
+    res.status(500).json({ message: "Internal server error during Firebase auth" });
+  }
 });
 
 // Task API Endpoints
